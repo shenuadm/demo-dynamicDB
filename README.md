@@ -319,6 +319,6 @@ spring:
 
 ### 仓库 URL
 
-GitHub：https://github.com/shenuadm/demo-dynamicDB
+GitHub: [https://github.com/shenuadm/demo-dynamicDB](https://github.com/shenuadm/demo-dynamicDB/tree/main)
 
-Gitee:
+Gitee: https://gitee.com/mchshenu/demo-dynamic-db
