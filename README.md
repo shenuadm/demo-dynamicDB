@@ -5,9 +5,7 @@
 ## 创建 SpringBoot 项目
 
 项目架构如下
-
-![image-20250103093941197](.\typora-images\image-20250103093941197.png)
-
+![image-20250103093941197](https://github.com/user-attachments/assets/10dc3435-d0ad-4520-b9d3-7a89fb945eaa)
 ## 整合 Druid
 
 ### 添加依赖
