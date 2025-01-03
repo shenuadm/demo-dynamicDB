@@ -5,7 +5,9 @@
 ## 创建 SpringBoot 项目
 
 项目架构如下
+
 ![image-20250103093941197](https://github.com/user-attachments/assets/10dc3435-d0ad-4520-b9d3-7a89fb945eaa)
+
 ## 整合 Druid
 
 ### 添加依赖
@@ -137,11 +139,11 @@ http://localhost:8080/druid/login.html
 
 使用配置文件里面的用户名和密码登录即可
 
-![image-20250103150929218](.\typora-images\image-20250103150929218.png)
+![image-20250103150929218](https://github.com/user-attachments/assets/ca99e86b-f678-4a78-9f31-2a4a36bce611)
 
 页面如下：
 
-![image-20250103151006769](.\typora-images\image-20250103151006769.png)
+![image-20250103151006769](https://github.com/user-attachments/assets/322760bd-3166-46f6-ae97-52921822f1d2)
 
 ## 整合 DynamicDatasource
 
@@ -303,294 +305,10 @@ spring:
           password: 123456
 ```
 
-### 添加测试代码
-
-#### controller
-
-```
-package com.example.demo.controller;
-
-import com.example.demo.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-
-/**
- * 用户控制器类
- *
- * @author 一陌千尘
- * @date 2025/01/02
- */
-@Slf4j
-@RestController
-@RequiredArgsConstructor
-public class UserController {
-
-    private final UserService service;
-
-    @GetMapping("test1")
-    public String test1() {
-        return service.test1();
-    }
-
-    @GetMapping("test2")
-    public String test2() {
-        return service.test2();
-    }
-}
-```
-
-#### service
-
-```
-package com.example.demo.service;
-
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.demo.entity.User;
-
-/**
- * 用户服务接口
- *
- * @author 一陌千尘
- * @date 2025/01/02
- */
-public interface UserService  {
-
-    // 测试方法1
-    String test1();
-
-    // 测试方法2
-    String test2();
-}
-```
-
-#### impl
-
-```
-package com.example.demo.service.impl;
-
-import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.entity.Order;
-import com.example.demo.entity.User;
-import com.example.demo.mapper.Order2Mapper;
-import com.example.demo.mapper.OrderMapper;
-import com.example.demo.mapper.UserMapper;
-import com.example.demo.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-
-/**
- * 用户服务实现类
- *
- * @author 一陌千尘
- * @date 2025/01/02
- */
-@DS("master") // 指定数据源，不指定则使用默认数据源 master
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
-
-    // 使用 master 数据源
-    private final UserMapper userMapper;
-    // 使用 slave1 数据源
-    private final OrderMapper orderMapper;
-    // 未指定数据源
-    private final Order2Mapper order2Mapper;
-
-    @Override
-    public String test1() {
-        LambdaQueryWrapper<User> userLambdaQueryWrapper = Wrappers.lambdaQuery(User.class).eq(User::getName, "aaa");
-        User user = userMapper.selectOne(userLambdaQueryWrapper);
-        log.info("test1 ===== user: {}", user.getName());
-        LambdaQueryWrapper<Order> orderLambdaQueryWrapper = Wrappers.lambdaQuery(Order.class).eq(Order::getCode, "bbb");
-        Order order = orderMapper.selectOne(orderLambdaQueryWrapper);
-        log.info("test1 ===== order: {}", order.getCode());
-        return "ok";
-    }
-
-    @Override
-    @DS("slave1") // 指定数据源，不指定则使用类上指定的数据源，如果类上未指定则使用默认数据源 master
-    public String test2() {
-        LambdaQueryWrapper<Order> userLambdaQueryWrapper = Wrappers.lambdaQuery(Order.class).eq(Order::getCode, "bbb");
-        Order order = order2Mapper.selectOne(userLambdaQueryWrapper);
-        log.info("test2 ===== order: {}", order.getCode());
-        return "ok";
-    }
-
-}
-```
-
-#### mapper
-
-```
-package com.example.demo.mapper;
-
-import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.entity.User;
-
-/**
- * 用户表 Mapper 接口
- *
- * @author 一陌千尘
- * @date 2025/01/02
- */
-@DS("master")
-public interface UserMapper extends BaseMapper<User> {
-
-}
-```
-
-```
-package com.example.demo.mapper;
-
-import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.entity.Order;
-
-/**
- * 订单表 Mapper 接口
- *
- * @author 一陌千尘
- * @date 2025/01/02
- */
-@DS("slave1")
-public interface OrderMapper extends BaseMapper<Order> {
-
-}
-```
-
-```
-package com.example.demo.mapper;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.entity.Order;
-import org.apache.ibatis.annotations.Select;
-
-/**
- * 订单表 Mapper 接口2
- *
- * @author 一陌千尘
- * @date 2025/01/02
- */
-public interface Order2Mapper extends BaseMapper<Order> {
-
-}
-```
-
-#### entity
-
-```
-package com.example.demo.entity;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
-/**
- * 用户实体类
- *
- * @author 一陌千尘
- * @date 2025/01/02
- */
-@TableName("user")
-@Data
-public class User {
-
-    @TableId(type = IdType.AUTO)
-    private Long id;
-    private String name;
-    private String phone;
-}
-```
-
-```
-package com.example.demo.entity;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
-/**
- * 订单实体类
- *
- * @author 一陌千尘
- * @date 2025/01/02
- */
-@TableName("order")
-@Data
-public class Order {
-
-    @TableId(type = IdType.AUTO)
-    private Long id;
-    private String code;
-    private double amount;
-}
-```
-
-#### SQL
-
-```
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for user
--- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user`  (
-  `id` int(0) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of user
--- ----------------------------
-INSERT INTO `user` VALUES (1, 'aaa');
-INSERT INTO `user` VALUES (2, 'ccc');
-
-SET FOREIGN_KEY_CHECKS = 1;
-```
-
-```
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for order
--- ----------------------------
-DROP TABLE IF EXISTS `order`;
-CREATE TABLE `order`  (
-  `id` int(0) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of order
--- ----------------------------
-INSERT INTO `order` VALUES (1, 'aaa');
-INSERT INTO `order` VALUES (2, 'bbb');
-INSERT INTO `order` VALUES (3, 'ccc');
-
-SET FOREIGN_KEY_CHECKS = 1;
-```
-
 ### 启动测试
 
 启动的时候，注意查看日志，如下：
 
-![](log1.png)
+![log1](https://github.com/user-attachments/assets/9aeb4904-f941-4771-a40a-7a593f439c8b)
 
 运行后可以测试得出使用动态数据源了
