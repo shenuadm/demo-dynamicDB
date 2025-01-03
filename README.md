@@ -133,6 +133,10 @@ spring:
             multi-statement-allow: true
 ```
 
+### 添加测试类
+
+  具体代码可查看代码仓库
+
 ### 访问测试
 
 http://localhost:8080/druid/login.html
@@ -312,3 +316,9 @@ spring:
 ![log1](https://github.com/user-attachments/assets/9aeb4904-f941-4771-a40a-7a593f439c8b)
 
 运行后可以测试得出使用动态数据源了
+
+### 仓库 URL
+
+GitHub：https://github.com/shenuadm/demo-dynamicDB
+
+Gitee:
