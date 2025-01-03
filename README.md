@@ -6,7 +6,7 @@
 
 项目架构如下
 
-![image-20250103093941197](https://github.com/user-attachments/assets/10dc3435-d0ad-4520-b9d3-7a89fb945eaa)
+![image](https://github.com/user-attachments/assets/6a8adc95-9a56-4446-8e2f-7256386b5429)
 
 ## 整合 Druid
 
